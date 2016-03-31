@@ -32,7 +32,7 @@ public class JavaAgentSkipTest {
     }
 
     @Test
-    public void testIfPresent1() {
+    public void testIfPresent_String() {
         // when
         JavaAgentSkip skip = JavaAgentSkip.ifPresent("A message format");
         // then
@@ -40,17 +40,17 @@ public class JavaAgentSkipTest {
     }
 
     @Test
-    public void testIfNotPresent() {
+    public void testIfAbsent() {
         // when
-        JavaAgentSkip skip = JavaAgentSkip.ifNotPresent();
+        JavaAgentSkip skip = JavaAgentSkip.ifAbsent();
         // then
         assertThat(skip).isNotNull();
     }
 
     @Test
-    public void testIfNotPresent1() {
+    public void testIfAbsent_String() {
         // when
-        JavaAgentSkip skip = JavaAgentSkip.ifNotPresent("A other message format");
+        JavaAgentSkip skip = JavaAgentSkip.ifAbsent("A other message format");
         // then
         assertThat(skip).isNotNull();
     }

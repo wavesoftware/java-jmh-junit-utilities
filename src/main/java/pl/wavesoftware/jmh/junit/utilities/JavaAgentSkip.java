@@ -42,19 +42,41 @@ public final class JavaAgentSkip implements TestRule {
         this.runtimeMxBean = runtimeMxBean;
     }
 
+    /**
+     * Creates a JavaAgentSkip rule that is set to skip if agent is present
+     * @return a JavaAgentSkip rule
+     */
     public static JavaAgentSkip ifPresent() {
         return new JavaAgentSkip(true);
     }
 
+    /**
+     * Creates a JavaAgentSkip rule that is set to skip if agent is present. User can pass an extra message
+     * format to be used as a skip message.
+     *
+     * @param messageFormat an extra message format to be used as a skip message
+     * @return a JavaAgentSkip rule
+     */
     public static JavaAgentSkip ifPresent(String messageFormat) {
         return new JavaAgentSkip(true, messageFormat, DEFAULT_RUNTIME_MXBEAN);
     }
 
-    public static JavaAgentSkip ifNotPresent() {
+    /**
+     * Creates a JavaAgentSkip rule that is set to skip if agent is absent
+     * @return a JavaAgentSkip rule
+     */
+    public static JavaAgentSkip ifAbsent() {
         return new JavaAgentSkip(false);
     }
 
-    public static JavaAgentSkip ifNotPresent(String messageFormat) {
+    /**
+     * Creates a JavaAgentSkip rule that is set to skip if agent is absent. User can pass an extra message
+     * format to be used as a skip message.
+     *
+     * @param messageFormat an extra message format to be used as a skip message
+     * @return a JavaAgentSkip rule
+     */
+    public static JavaAgentSkip ifAbsent(String messageFormat) {
         return new JavaAgentSkip(false, messageFormat, DEFAULT_RUNTIME_MXBEAN);
     }
 

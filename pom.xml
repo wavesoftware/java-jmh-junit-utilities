@@ -6,9 +6,9 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>A JMH utilities to be used in JUnit tests</name>
+    <name>JMH Utils for JUnit</name>
     <description>
-        This micro library with usefull JUnit rules.
+        This micro library with useful JUnit rules.
     </description>
     <url>http://wavesoftware.github.io/java-jmh-junit-utilities/</url>
     <inceptionYear>2016</inceptionYear>
