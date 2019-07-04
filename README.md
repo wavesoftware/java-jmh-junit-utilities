@@ -1,43 +1,32 @@
 # JMH Utils for JUnit
 This micro library holds a set of JUnit utilities for usage with JMH testing framework.
 
-[![Build Status](https://travis-ci.org/wavesoftware/java-jmh-junit-utilities.svg?branch=master)](https://travis-ci.org/wavesoftware/java-jmh-junit-utilities) [![Coverage Status](https://coveralls.io/repos/wavesoftware/java-jmh-junit-utilities/badge.svg?branch=master&service=github)](https://coveralls.io/github/wavesoftware/java-jmh-junit-utilities?branch=master) [![SonarQube Tech Debt](https://img.shields.io/sonar/http/sonar-ro.wavesoftware.pl/pl.wavesoftware:jmh-junit-utilities/tech_debt.svg)](http://sonar-ro.wavesoftware.pl/dashboard/index/3862) [![Dependency Status](https://www.versioneye.com/user/projects/56fd3e99fcd19a004543f5eb/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56fd3e99fcd19a004543f5eb) [![Maven Central](https://img.shields.io/maven-central/v/pl.wavesoftware/jmh-junit-utilities.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22pl.wavesoftware%22%20AND%20a%3A%22jmh-junit-utilities%22)
+[![Build Status](https://travis-ci.org/wavesoftware/java-jmh-junit-utilities.svg?branch=master)](https://travis-ci.org/wavesoftware/java-jmh-junit-utilities) [![Coverage Status](https://coveralls.io/repos/wavesoftware/java-jmh-junit-utilities/badge.svg?branch=master&service=github)](https://coveralls.io/github/wavesoftware/java-jmh-junit-utilities?branch=master) [![SonarQube Tech Debt](https://img.shields.io/sonar/http/sonar-ro.wavesoftware.pl/pl.wavesoftware:jmh-junit-utilities/tech_debt.svg)](http://sonar-ro.wavesoftware.pl/dashboard/index/3862) [![Maven Central](https://img.shields.io/maven-central/v/pl.wavesoftware/jmh-junit-utilities.svg)](https://search.maven.org/artifact/pl.wavesoftware/jmh-junit-utilities/)
 
 ## General use
 
-### `JmhCleaner` rule
+### `JmhCleaner` extension
 
 JMH is kinda dirty. It leaves after himself a set of tests classes. They are placed in Maven generated sources directory and may cause a false positives in code analysis tools like SonarQube. `JmhCleaner` rule is designed to overcome that and remove any JMH generated classes.
   
-Use it as a standard JUnit test rule or class rule. One needs to pass a test class in constructor.
+Use it as a standard JUnit 5 extension. One needs to pass a test class in constructor.
 
 Example:
 
 ```java
-@ClassRule
-public static JmhCleaner cleaner = new JmhCleaner(MyClassTest.class);
+@RegisterExtension
+static JmhCleaner cleaner = new JmhCleaner(MyClassTest.class);
 ```
 
-### `JavaAgentSkip` rule
+### `JavaAgentSkip` extension
 
-JMH is, as any performance framework, sensitive to all intrussions like running java agents. Those are coverage tools (Jacoco), debuggers, profilers and so on. To overcome that one can use `JavaAgentSkip` rule to automatically skip test is JAva agent is present.
+JMH is, as any performance framework, sensitive to all intrusions like running java agents. Those are coverage tools (Jacoco), debuggers, profilers and so on. To overcome that one can use `JavaAgentSkip` rule to automatically skip test is JAva agent is present.
 
 Example:
 
 ```java
-@ClassRule
-public static JavaAgentSkip javaAgentSkip = JavaAgentSkip.ifPresent();
-```
-
-### All in one
-
-If you like to use both those rules, it's a good idea to place them in explicit order, to ensure cleaning is performed.
-
-```java
-@ClassRule
-public static RuleChain chain = RuleChain
-    .outerRule(new JmhCleaner(ExhibitFactoryIT.class))
-    .around(JavaAgentSkip.ifPresent());
+@RegisterExtension
+static JavaAgentSkip javaAgentSkip = JavaAgentSkip.ifPresent();
 ```
 
 ## Maven
@@ -46,7 +35,7 @@ public static RuleChain chain = RuleChain
 <dependency>
     <groupId>pl.wavesoftware</groupId>
     <artifactId>jmh-junit-utilities</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
@@ -66,9 +55,14 @@ Even if you can't contribute code, if you have an idea for an improvement please
 
 ## Requirements
 
-* JDK >= 1.6
+* JDK >= 1.8
 
 ### Releases
+ 
+- 2.0.0
+  - Support for JDK >= 1.8
+  - Support for JUnit 5
+  - Dropped support for JUnit 4
  
 - 1.0.0
   - Support for JDK >= 1.6
