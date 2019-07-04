@@ -1,30 +1,44 @@
+/*
+ * Copyright 2016-2019 Wave Software
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package pl.wavesoftware.jmh.junit.utilities;
 
-import org.junit.AssumptionViolatedException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.opentest4j.TestAbortedException;
 
 import java.lang.management.RuntimeMXBean;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author <a href="mailto:krzysztof.suszynski@coi.gov.pl">Krzysztof Suszynski</a>
  * @since 31.03.16
  */
-public class JavaAgentSkipTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+class JavaAgentSkipTest {
 
     @Test
-    public void testIfPresent() {
+    void testIfPresent() {
         // when
         JavaAgentSkip skip = JavaAgentSkip.ifPresent();
         // then
@@ -32,7 +46,7 @@ public class JavaAgentSkipTest {
     }
 
     @Test
-    public void testIfPresent_String() {
+    void testIfPresent_String() {
         // when
         JavaAgentSkip skip = JavaAgentSkip.ifPresent("A message format");
         // then
@@ -40,7 +54,7 @@ public class JavaAgentSkipTest {
     }
 
     @Test
-    public void testIfAbsent() {
+    void testIfAbsent() {
         // when
         JavaAgentSkip skip = JavaAgentSkip.ifAbsent();
         // then
@@ -48,7 +62,7 @@ public class JavaAgentSkipTest {
     }
 
     @Test
-    public void testIfAbsent_String() {
+    void testIfAbsent_String() {
         // when
         JavaAgentSkip skip = JavaAgentSkip.ifAbsent("A other message format");
         // then
@@ -56,41 +70,42 @@ public class JavaAgentSkipTest {
     }
 
     @Test
-    public void testApply() throws Throwable {
+    void testApply() {
         // given
         RuntimeMXBean mxbean = mock(RuntimeMXBean.class);
-        List<String> args = Arrays.asList("-ea", "-server", "-Xmx128m", "-javaagent:jacoco", "-Xms32m");
+        List<String> args = Arrays.asList(
+            "-ea", "-server", "-Xmx128m", "-javaagent:jacoco", "-Xms32m"
+        );
         when(mxbean.getInputArguments()).thenReturn(args);
-        Statement statement = mock(Statement.class);
-        Description description = mock(Description.class);
-        JavaAgentSkip skip = new JavaAgentSkip(true, JavaAgentSkip.DEFAULT_MESSAGE_FORMAT, mxbean);
-
-        // then
-        thrown.expect(AssumptionViolatedException.class);
-        thrown.expectMessage("Skipping test due to JavaAgentSkip rule set to true");
+        JavaAgentSkip skip = new JavaAgentSkip(
+            true, JavaAgentSkip.DEFAULT_MESSAGE_FORMAT, mxbean
+        );
+        ExtensionContext ctx = mock(ExtensionContext.class);
 
         // when
-        Statement newStatement = skip.apply(statement, description);
-        assertThat(newStatement).isNotNull();
-        newStatement.evaluate();
+        ThrowingCallable throwingCallable = () -> skip.beforeEach(ctx);
+
+        // then
+        assertThatCode(throwingCallable)
+            .isInstanceOf(TestAbortedException.class)
+            .hasMessage("Assumption failed: Skipping test due to JavaAgentSkip set to true");
     }
 
     @Test
-    public void testApply_Possitive() throws Throwable {
+    void testApply_Possitive() {
         // given
         List<String> args = Arrays.asList("-ea", "-server", "-Xmx128m", "-Xms32m");
         RuntimeMXBean mxbean = mock(RuntimeMXBean.class);
         when(mxbean.getInputArguments()).thenReturn(args);
-        Statement statement = mock(Statement.class);
-        Description description = mock(Description.class);
-        JavaAgentSkip skip = new JavaAgentSkip(true, JavaAgentSkip.DEFAULT_MESSAGE_FORMAT, mxbean);
+        JavaAgentSkip skip = new JavaAgentSkip(
+            true, JavaAgentSkip.DEFAULT_MESSAGE_FORMAT, mxbean
+        );
+        ExtensionContext ctx = mock(ExtensionContext.class);
 
         // when
-        Statement newStatement = skip.apply(statement, description);
-        assertThat(newStatement).isNotNull();
-        newStatement.evaluate();
+        skip.beforeEach(ctx);
 
         // then
-        verify(statement).evaluate();
+        verify(mxbean).getInputArguments();
     }
 }

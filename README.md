@@ -29,6 +29,17 @@ Example:
 public static JavaAgentSkip javaAgentSkip = JavaAgentSkip.ifPresent();
 ```
 
+### All in one
+
+If you like to use both those rules, it's a good idea to place them in explicit order, to ensure cleaning is performed.
+
+```java
+@ClassRule
+public static RuleChain chain = RuleChain
+    .outerRule(new JmhCleaner(ExhibitFactoryIT.class))
+    .around(JavaAgentSkip.ifPresent());
+```
+
 ## Maven
 
 ```xml

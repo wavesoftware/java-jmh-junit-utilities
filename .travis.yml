@@ -1,18 +1,16 @@
 language: java
-script: mvn clean install --fail-at-end
-notifications:
-  email:
-    on_failure: true
+sudo: false
+dist: xenial
+script: ./mvnw -V clean verify --fail-at-end -U -Prelease-checks
 matrix:
-  include:
-  - jdk: openjdk6
-    env: JACOCO=true
-  - jdk: openjdk7
-    env: JACOCO=true COVERALLS=true
-  - jdk: oraclejdk7
-    env: JACOCO=true
-  - jdk: oraclejdk8
-    env: JACOCO=true
-  - jdk: openjdk7
-    env: JACOCO=true SONAR=publish
-    script: mvn clean install sonar:sonar --fail-at-end
+    include:
+        - jdk: openjdk8
+          env: JACOCO=true COVERALLS=true
+        - jdk: openjdk11
+          env: JACOCO=true
+        - jdk: openjdk8
+          env: JACOCO=true SONAR=publish
+          script: ./mvnw -V clean verify sonar:sonar --fail-at-end -U
+notifications:
+    email:
+        on_failure: change
